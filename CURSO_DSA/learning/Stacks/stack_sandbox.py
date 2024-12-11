@@ -1,23 +1,42 @@
 from Node import Node
 import logging
+
 class Stack:
-    def __init__(self):
+    def __init__(self, limit=1000):
         self.top_item = None
+        self.size = 0  # Inicializa el tamaño
+        self.limit = limit  # Establece el límite
+
     def push(self, value):
-        item = Node(value)  # Crear un nuevo nodo
-        item.set_next_node(self.top_item)  # Establecer el siguiente nodo
-        self.top_item = item  # Actualizar el top_item
+        if not self.has_space():
+            logging.warning("La pila esta llena ¡No queda espacio!")  # Mensaje corregido
+            return  # Salir si no hay espacio
+
+        item = Node(value)
+        item.set_next_node(self.top_item)
+        self.top_item = item
+        self.size += 1  # Incrementar el tamaño
+
     def pop(self):
-        if self.top_item is None:
-            logging.warning("No se puede hacer pop en una pila vacía.")
-            raise AttributeError("No se puede hacer pop en una pila vacía.")
-        item_to_remove = self.top_item  # Guardar el item a eliminar
-        self.top_item = item_to_remove.next  # Actualizar el top_item
+        if self.is_empty():
+            logging.warning("La pila esta totalmente vacia!")  # Mensaje corregido
+            return None  # Cambiar a None en lugar de lanzar una excepción
+
+        item_to_remove = self.top_item
+        self.top_item = item_to_remove.next
+        self.size -= 1  # Reducir el tamaño al hacer pop
         return item_to_remove.get_value()
-    
+
     def peek(self):
-        if self.top_item is not None:
+        if not self.is_empty():
             return self.top_item.get_value()
         else:
-            logging.warning("La pila está vacía. No se puede hacer peek.")
-            raise AttributeError("No se puede hacer peek en una pila vacía.")
+            logging.warning("La pila esta totalmente vacia!")  # Mensaje corregido
+            return None  # Devolver None si está vacía
+
+    def has_space(self):
+        return self.limit > self.size
+
+    def is_empty(self):
+        return self.size == 0
+
